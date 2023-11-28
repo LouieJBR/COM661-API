@@ -32,7 +32,7 @@ def return_one_product(id):
         product['_id'] = str(product['_id'])
         for review in product['reviews']:
             review['_id'] = str(review['_id'])
-        return make_response(jsonify(product), 200)
+        return make_response(jsonify([product]), 200)
     else:
         return make_response(jsonify({"error": "Invalid product ID"}), 404)
 

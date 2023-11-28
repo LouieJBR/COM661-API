@@ -1,10 +1,12 @@
 from flask import Flask
 from pymongo import MongoClient
+from flask_cors import CORS
 
 from services import productService, sprayService, reviewService, userService, tokenService
 from services.tokenService import jwt_required, admin_required
 
 app = Flask(__name__)
+CORS(app)
 
 client = MongoClient("mongodb://127.0.0.1:27017")
 db = client.Shop  # select the database
