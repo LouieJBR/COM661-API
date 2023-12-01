@@ -105,3 +105,23 @@ def delete_product(id):
         return make_response(jsonify({}), 204)
     else:
         return make_response(jsonify({"error": "Invalid product ID"}), 404)
+
+
+def return_type_of_product(productType):
+    page_num, page_size, page_start = Utils.pagination()
+    sort_field, sort_order = Utils.check_sort_params()
+
+    pipeline = [
+        {"$match": {"type": {'$in': [productType]}}},
+        {"$sort": {sort_field: sort_order}}
+    ]
+
+    data_to_return = []
+    for product in products.aggregate(pipeline):
+        product['_id'] = str(product['_id'])
+        data_to_return.append(product)
+
+    # Apply skip and limit after aggregation
+    data_to_return = data_to_return[page_start:page_start + page_size]
+
+    return make_response(jsonify(data_to_return), 200)

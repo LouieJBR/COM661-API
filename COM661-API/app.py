@@ -64,6 +64,10 @@ def edit_product(id):
 def delete_product(id):
     return productService.delete_product(id)
 
+@app.route(BASE_URL + "/products/type/<string:productType>", methods=["GET"])
+def return_type_of_product(productType):
+    return productService.return_type_of_product(productType)
+
 
 @app.route(BASE_URL + "/products/<string:id>/reviews", methods=["GET"])
 def fetch_all_reviews(id):

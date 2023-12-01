@@ -26,3 +26,4 @@ def return_all_sprays():
     data_to_return = data_to_return[page_start:page_start + page_size]
 
     return make_response(jsonify(data_to_return), 200)
+
