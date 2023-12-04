@@ -70,4 +70,6 @@ def check_sort_params():
 
     return sort_field, sort_order
 
+def convert_to_title_case(input_string):
+    return ' '.join(word.capitalize() for word in input_string.replace('-', ' ').split())
 

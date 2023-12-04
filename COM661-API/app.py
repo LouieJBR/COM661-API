@@ -20,7 +20,7 @@ app.config['SECRET_KEY'] = 'mysecret'
 BASE_URL = '/api/v1.0'
 
 
-@app.route(BASE_URL + '/login', methods=['GET'])
+@app.route(BASE_URL + '/login', methods=['POST'])
 def login():
     return userService.login()
 
@@ -63,6 +63,7 @@ def edit_product(id):
 @admin_required
 def delete_product(id):
     return productService.delete_product(id)
+
 
 @app.route(BASE_URL + "/products/type/<string:productType>", methods=["GET"])
 def return_type_of_product(productType):
