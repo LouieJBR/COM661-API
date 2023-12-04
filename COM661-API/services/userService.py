@@ -20,17 +20,30 @@ blacklist = db.blacklist
 def login():
     auth = request.authorization
 
+    print(auth)
+
     if auth:
+
         user = users.find_one({'username': auth.username})
+
         if user is not None:
+
             if bcrypt.checkpw(bytes(auth.password, 'UTF-8'), user["password"]):
+
                 token = jwt.encode({'user': auth.username, 'admin': user['admin'],
+
                                     'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
+
                                    app.config['SECRET_KEY'])
-                return make_response(jsonify({'token': token.decode('UTF-8')}), 200)
+
+                return make_response(jsonify({'token': token}), 200)
+
             else:
+
                 return make_response(jsonify({'message': 'Incorrect Username or Password'}), 401)
+
         else:
+
             return make_response(jsonify({'message': 'Incorrect Username or Password'}), 401)
 
     return make_response(jsonify({'message': 'Authentication required'}), 401)
