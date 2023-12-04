@@ -11,6 +11,7 @@ client = MongoClient("mongodb://127.0.0.1:27017")
 db = client.Shop  # select the database
 productsCollection = db.Products  # select the collection
 
+
 def return_all_products():
     page_num, page_size, page_start = Utils.pagination()
     sort_field, sort_order = Utils.check_sort_params()
@@ -111,6 +112,7 @@ def delete_product(id):
     else:
         return make_response(jsonify({"error": "Invalid product ID"}), 404)
 
+
 def return_type_of_product(productType):
     page_num, page_size, page_start = Utils.pagination()
     sort_field, sort_order = Utils.check_sort_params()
@@ -136,34 +138,3 @@ def return_type_of_product(productType):
     data_to_return = data_to_return[page_start:page_start + page_size]
 
     return make_response(jsonify(data_to_return), 200)
-
-
-# def return_type_of_product(productType):
-#     page_num, page_size, page_start = Utils.pagination()
-#     sort_field, sort_order = Utils.check_sort_params()
-#
-#     pipeline = [
-#         {"$match": {"$regex": productType, "$options": "i"},{"type":  productType}},
-#         {"$sort": {sort_field: sort_order}}
-#     ]
-#
-#     data_to_return = []
-#     for product in products.aggregate(pipeline):
-#         product['_id'] = str(product['_id'])
-#         data_to_return.append(product)
-#
-#     # Apply skip and limit after aggregation
-#     data_to_return = data_to_return[page_start:page_start + page_size]
-#
-#     return make_response(jsonify(data_to_return), 200)
-
-# def return_type_of_product(productType):
-#     # Query MongoDB collection for products with matching type
-#     products = productsCollection.find({'type': productType})
-#
-#     # Convert MongoDB cursor to a list of dictionaries
-#     product_list = list(products)
-#
-#     # Return the list of products as JSON
-#     # return jsonify({'products': product_list})
-#     return make_response(jsonify(product_list), 200)
