@@ -17,9 +17,9 @@ users = db.Users
 ingredients = db.Ingredients
 blacklist = db.blacklist
 
+
 def login():
     auth_header = request.headers.get('Authorization')
-    print('auth headers: ', auth_header)
 
     if not auth_header or 'Basic ' not in auth_header:
         return make_response(jsonify({'message': 'Authentication required'}), 401)
@@ -28,47 +28,20 @@ def login():
     decoded_credentials = base64.b64decode(encoded_credentials).decode('utf-8')
     username, password = decoded_credentials.split(':')
 
-    print(username, password)
-
     user = users.find_one({'username': username})
 
     if user is not None and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
         token = jwt.encode({'user': username, 'admin': user['admin'],
                             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
                            app.config['SECRET_KEY'])
-        return make_response(jsonify({'token': token}), 200)
+
+        response = jsonify({'token': token})
+        # Set the token as a header in the response
+        response.headers['x-access-token'] = token
+
+        return make_response(response, 200)
     else:
         return make_response(jsonify({'message': 'Incorrect Username or Password'}), 401)
-# def login():
-#     auth = request.authorization
-#
-#     print(request.authorization)
-#
-#     if auth:
-#
-#         user = users.find_one({'username': auth.username})
-#
-#         if user is not None:
-#
-#             if bcrypt.checkpw(bytes(auth.password, 'UTF-8'), user["password"]):
-#
-#                 token = jwt.encode({'user': auth.username, 'admin': user['admin'],
-#
-#                                     'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
-#
-#                                    app.config['SECRET_KEY'])
-#
-#                 return make_response(jsonify({'token': token}), 200)
-#
-#             else:
-#
-#                 return make_response(jsonify({'message': 'Incorrect Username or Password'}), 401)
-#
-#         else:
-#
-#             return make_response(jsonify({'message': 'Incorrect Username or Password'}), 401)
-#
-#     return make_response(jsonify({'message': 'Authentication required'}), 401)
 
 
 def logout():
