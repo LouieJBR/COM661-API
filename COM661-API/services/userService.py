@@ -33,7 +33,7 @@ def login():
     if user is not None and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
         token = jwt.encode({'user': username, 'admin': user['admin'],
                             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
-                           app.config['SECRET_KEY'])
+                           app.config['SECRET_KEY']).decode('utf-8')
 
         response = jsonify({'token': token})
         # Set the token as a header in the response
