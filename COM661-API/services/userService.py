@@ -17,6 +17,41 @@ users = db.Users
 ingredients = db.Ingredients
 blacklist = db.blacklist
 
+def signup():
+    data = request.get_json()
+
+    # Check if all required fields are present
+    if not all(key in data for key in ('name', 'username', 'password', 'email')):
+        return make_response(jsonify({'message': 'Missing required fields'}), 400)
+
+    # Check if username or email already exists in the database
+    existing_user = users.find_one({'$or': [{'username': data['username']}, {'email': data['email']}]})
+    if existing_user:
+        return make_response(jsonify({'message': 'Username or Email already exists'}), 400)
+
+    # Hash the password before storing it
+    hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
+
+    # Create a new user document
+    new_user = {
+        'name': data['name'],
+        'username': data['username'],
+        'password': hashed_password,
+        'email': data['email'],
+        'admin': False  # You can set admin status here if needed
+    }
+
+    # Insert the new user into the database
+    users.insert_one(new_user)
+
+    # Prepare the response
+    response_data = {
+        'message': 'User registered successfully',
+    }
+
+    return make_response(jsonify(response_data), 201)
+
+
 
 def login():
     auth_header = request.headers.get('Authorization')
