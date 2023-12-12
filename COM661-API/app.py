@@ -23,7 +23,9 @@ BASE_URL = '/api/v1.0'
 @app.route(BASE_URL + '/login', methods=['POST'])
 def login():
     return userService.login()
-
+@app.route(BASE_URL + '/signup', methods=['POST'])
+def signup():
+    return userService.signup()
 
 @app.route(BASE_URL + '/logout', methods=["GET"])
 @jwt_required
