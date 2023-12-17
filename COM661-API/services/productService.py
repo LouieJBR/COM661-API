@@ -10,6 +10,7 @@ products = {}
 client = MongoClient("mongodb://127.0.0.1:27017")
 db = client.Shop  # select the database
 productsCollection = db.Products  # select the collection
+userCollection = db.Users
 
 
 def return_all_products():
