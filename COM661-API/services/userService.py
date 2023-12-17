@@ -17,6 +17,7 @@ users = db.Users
 ingredients = db.Ingredients
 blacklist = db.blacklist
 
+
 def signup():
     data = request.get_json()
 
@@ -52,7 +53,6 @@ def signup():
     return make_response(jsonify(response_data), 201)
 
 
-
 def login():
     auth_header = request.headers.get('Authorization')
 
@@ -83,3 +83,14 @@ def logout():
     token = request.headers['x-access-token']
     blacklist.insert_one({"token": token})
     return make_response(jsonify({'message': 'Logout successful'}), 200)
+
+
+def get_user_id(username):
+    # Query the database to find the user document by username
+    user = users.find_one({'username': username}, {'_id': 1})
+
+    if user:
+        user_id = str(user['_id'])  # Convert ObjectId to string for JSON serialization
+        return jsonify({'userID': user_id}), 200
+    else:
+        return jsonify({'error': 'User not found'}), 404

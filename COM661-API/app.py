@@ -1,9 +1,12 @@
-from flask import Flask
+from bson import ObjectId
+from bson.json_util import default
+from flask import Flask, json
 from pymongo import MongoClient
 from flask_cors import CORS
 
-from services import productService, sprayService, reviewService, userService, tokenService
+from services import productService, sprayService, reviewService, userService, tokenService, wishlistService
 from services.tokenService import jwt_required, admin_required
+
 
 app = Flask(__name__)
 CORS(app)
@@ -23,9 +26,12 @@ BASE_URL = '/api/v1.0'
 @app.route(BASE_URL + '/login', methods=['POST'])
 def login():
     return userService.login()
+
+
 @app.route(BASE_URL + '/signup', methods=['POST'])
 def signup():
     return userService.signup()
+
 
 @app.route(BASE_URL + '/logout', methods=["GET"])
 @jwt_required
@@ -36,6 +42,21 @@ def logout():
 @app.route(BASE_URL + "/products", methods=["GET"])
 def return_all_products():
     return productService.return_all_products()
+
+
+@app.route(BASE_URL + "/wishlist/<string:username>/add/<string:product_id>", methods=["POST"])
+def add_product_to_wishlist(username, product_id):
+    return wishlistService.add_product_to_wishlist(username, product_id)
+
+
+@app.route(BASE_URL + "/wishlist/<string:username>/remove/<string:product_id>", methods=["DELETE"])
+def remove_product_from_wishlist(username, product_id):
+    return wishlistService.remove_product_from_wishlist(username, product_id)
+
+
+@app.route(BASE_URL + "/wishlist/<string:username>", methods=["GET"])
+def get_all_products_from_wishlist(username):
+    return wishlistService.get_all_products_from_wishlist(username)
 
 
 @app.route(BASE_URL + "/products/sprays", methods=["GET"])
@@ -98,6 +119,12 @@ def edit_review(p_id, r_id):
 @admin_required
 def delete_review(p_id, r_id):
     return reviewService.delete_review(p_id, r_id)
+
+
+@app.route(BASE_URL + "/users/<string:username>", methods=["GET"])
+def get_user_id(username):
+    print(userService.get_user_id(username))
+    return userService.get_user_id(username)
 
 
 if __name__ == "__main__":
