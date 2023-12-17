@@ -3,6 +3,7 @@ import datetime
 
 import bcrypt
 import jwt as jwt
+from bson import ObjectId
 from flask import request, jsonify, make_response
 from pymongo import MongoClient
 
@@ -94,3 +95,54 @@ def get_user_id(username):
         return jsonify({'userID': user_id}), 200
     else:
         return jsonify({'error': 'User not found'}), 404
+
+
+def update_account():
+    data = request.get_json()
+
+    # Check if all required fields are present
+    if not all(key in data for key in ('username', 'new_name', 'new_email')):
+        return make_response(jsonify({'message': 'Missing required fields'}), 400)
+
+    # Fetch the user by their username
+    user = users.find_one({'username': data['username']})
+
+    if not user:
+        return make_response(jsonify({'message': 'User not found'}), 404)
+
+    # Update user details
+    user['name'] = data['new_name']
+    user['email'] = data['new_email']
+
+    # Update the user document in the database
+    users.update_one({'username': user['username']}, {'$set': {'name': user['name'], 'email': user['email']}})
+
+    # Prepare the response with updated fields
+    response_data = {
+        'message': 'User information updated successfully',
+        'username': user['username'],  # Add other necessary fields
+        'new_name': user['name'],
+        'new_email': user['email']
+    }
+
+    return make_response(jsonify(response_data), 200)
+
+
+
+def get_all_users_info():
+    # Retrieve all user information from the database
+    all_users = list(users.find({}, {'_id': 0, 'password': 0}))  # Exclude '_id' and 'password' fields
+
+    if all_users:
+        return make_response(jsonify({'users': all_users}), 200)
+    else:
+        return make_response(jsonify({'message': 'No users found'}), 404)
+
+
+def get_user_info(user_identifier):
+    user = users.find_one({'username': user_identifier}, {'_id': 0, 'password': 0, 'wishlist': 0})
+    print(user)
+    if user:
+        return make_response(jsonify({'user': user}), 200)
+    else:
+        return make_response(jsonify({'message': 'User not found'}), 404)

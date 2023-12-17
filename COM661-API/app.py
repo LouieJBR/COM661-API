@@ -7,7 +7,6 @@ from flask_cors import CORS
 from services import productService, sprayService, reviewService, userService, tokenService, wishlistService
 from services.tokenService import jwt_required, admin_required
 
-
 app = Flask(__name__)
 CORS(app)
 
@@ -31,6 +30,16 @@ def login():
 @app.route(BASE_URL + '/signup', methods=['POST'])
 def signup():
     return userService.signup()
+
+
+@app.route(BASE_URL + '/update-account', methods=['PUT'])
+def update_account():
+    return userService.update_account()
+
+
+@app.route(BASE_URL + '/user-details/<string:username>', methods=['GET'])
+def get_user_info(username):
+    return userService.get_user_info(username)
 
 
 @app.route(BASE_URL + '/logout', methods=["GET"])
